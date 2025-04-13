@@ -77,6 +77,7 @@
       font-size: 1.1rem;
       transition: all 0.4s;
       transform-origin: left;
+      color: var(--text-light);
     }
 
     .result:hover {
@@ -87,6 +88,7 @@
     body.dark .result {
       background-color: #2a2e44;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      color: var(--text-dark);
     }
 
     .btn {
@@ -218,6 +220,11 @@
       font-weight: 600;
       margin-bottom: 0.5rem;
       font-size: 0.95rem;
+      transition: color 0.5s;
+    }
+    
+    body.dark .form-label {
+      color: var(--text-dark);
     }
     
     .operations-container {
@@ -233,6 +240,11 @@
       margin-top: 20px;
       border-top: 1px solid rgba(0,0,0,0.1);
       padding-top: 10px;
+      transition: color 0.5s;
+    }
+    
+    body.dark .history-list h5 {
+      color: var(--text-dark);
     }
 
     body.dark .history-list {
@@ -362,6 +374,18 @@
       background-color: var(--card-dark);
       color: var(--text-dark);
     }
+    
+    body.dark .modal-title {
+      color: var(--text-dark);
+    }
+    
+    body.dark .form-check-label {
+      color: var(--text-dark);
+    }
+    
+    body.dark .modal-body .form-label {
+      color: var(--text-dark);
+    }
 
     .decimal-places {
       width: 60px;
@@ -369,6 +393,13 @@
       border-radius: 5px;
       padding: 5px;
       margin: 0 10px;
+      transition: background-color 0.5s, color 0.5s;
+    }
+    
+    body.dark .decimal-places {
+      background-color: #2c3446;
+      color: var(--text-dark);
+      border: 1px solid #3a4356;
     }
 
     .color-theme {
@@ -420,10 +451,12 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      transition: background-color 0.5s, color 0.5s;
     }
 
     body.dark #resultDisplay {
       background-color: rgba(255,255,255,0.05);
+      color: var(--text-dark);
     }
 
     .calculation-mode {
@@ -442,6 +475,11 @@
       border-radius: 50px;
       cursor: pointer;
       transition: all 0.3s;
+      color: var(--text-light);
+    }
+    
+    body.dark .mode-btn {
+      color: var(--text-dark);
     }
 
     .mode-btn.active {
@@ -712,52 +750,52 @@ let decimalPlaces = 2;
 let calculationHistory = [];
 let currentMode = 'standard';
 
-// Função para alternar o modo escuro
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  const btn = document.querySelector(".toggle-btn");
-  if (document.body.classList.contains("dark")) {
-    btn.innerHTML = '<i class="fas fa-sun"></i> <span>Modo Claro</span>';
-  } else {
-    btn.innerHTML = '<i class="fas fa-moon"></i> <span>Modo Escuro</span>';
-  }
-}
-
-// Função para alterar o tema de cores
-function changeColorTheme(theme) {
-  const root = document.documentElement;
-  const themes = {
-    blue: {
-      light: 'linear-gradient(to right, #00c9ff, #92fe9d)',
-      dark: 'linear-gradient(to right, #0f2027, #203a43, #2c5364)'
-    },
-    purple: {
-      light: 'linear-gradient(to right, #8e2de2, #4a00e0)',
-      dark: 'linear-gradient(to right, #16222a, #3a6073)'
-    },
-    orange: {
-      light: 'linear-gradient(to right, #f12711, #f5af19)',
-      dark: 'linear-gradient(to right, #232526, #414345)'
-    },
-    pink: {
-      light: 'linear-gradient(to right, #fc5c7d, #6a82fb)',
-      dark: 'linear-gradient(to right, #000428, #004e92)'
-    },
-    green: {
-      light: 'linear-gradient(to right, #11998e, #38ef7d)',
-      dark: 'linear-gradient(to right, #1f4037, #99f2c8)'
+   // Função para alternar o modo escuro
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      const btn = document.querySelector(".toggle-btn");
+      if (document.body.classList.contains("dark")) {
+        btn.innerHTML = '<i class="fas fa-sun"></i> <span>Modo Claro</span>';
+      } else {
+        btn.innerHTML = '<i class="fas fa-moon"></i> <span>Modo Escuro</span>';
+      }
     }
-  };
-  
-  root.style.setProperty('--bg-light', themes[theme].light);
-  root.style.setProperty('--bg-dark', themes[theme].dark);
-  
-  // Atualiza o tema ativo
-  document.querySelectorAll('.color-theme').forEach(el => {
-    el.classList.remove('active');
-  });
-  document.querySelector(`.theme-${theme}`).classList.add('active');
-}
+
+    // Função para alterar o tema de cores
+    function changeColorTheme(theme) {
+      const root = document.documentElement;
+      const themes = {
+        blue: {
+          light: 'linear-gradient(to right, #00c9ff, #92fe9d)',
+          dark: 'linear-gradient(to right, #0f2027, #203a43, #2c5364)'
+        },
+        purple: {
+          light: 'linear-gradient(to right, #8e2de2, #4a00e0)',
+          dark: 'linear-gradient(to right, #16222a, #3a6073)'
+        },
+        orange: {
+          light: 'linear-gradient(to right, #f12711, #f5af19)',
+          dark: 'linear-gradient(to right, #232526, #414345)'
+        },
+        pink: {
+          light: 'linear-gradient(to right, #fc5c7d, #6a82fb)',
+          dark: 'linear-gradient(to right, #000428, #004e92)'
+        },
+        green: {
+          light: 'linear-gradient(to right, #11998e, #38ef7d)',
+          dark: 'linear-gradient(to right, #1f4037, #99f2c8)'
+        }
+      };
+      
+      root.style.setProperty('--bg-light', themes[theme].light);
+      root.style.setProperty('--bg-dark', themes[theme].dark);
+      
+      // Atualiza o tema ativo
+      document.querySelectorAll('.color-theme').forEach(el => {
+        el.classList.remove('active');
+      });
+      document.querySelector(`.theme-${theme}`).classList.add('active');
+    }
 
 // Função para mudar o modo de cálculo
 function changeMode(mode) {

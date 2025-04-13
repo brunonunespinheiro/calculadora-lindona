@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculadora Lindona 2.0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <!-- Animate.css para animações -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-light: linear-gradient(to right, #00c9ff, #92fe9d);
+      --bg-dark: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      --card-light: #ffffff;
+      --card-dark: #1e1e2f;
+      --text-light: #111;
+      --text-dark: #f1f1f1;
+      --primary: #0d6efd;
+      --primary-dark: #0b5ed7;
+      --secondary: #6c757d;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --info: #17a2b8;
+    }
+
+    body {
+      background: var(--bg-light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", sans-serif;
+      color: var(--text-light);
+      transition: all 0.5s ease;
+      padding: 20px;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .card {
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      background-color: var(--card-light);
+      width: 100%;
+      max-width: 550px;
+      transition: background-color 0.5s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark .card {
+      background-color: var(--card-dark);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .result {
+      background-color: #f1f9ff;
+      border-left: 5px solid var(--primary);
+      padding: 12px 15px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      transition: all 0.4s;
+      transform-origin: left;
+    }
+
+    .result:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark .result {
+      background-color: #2a2e44;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn {
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.1);
+      z-index: -2;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: all 0.3s;
+      z-index: -1;
+    }
+
+    .btn:hover::before {
+      width: 100%;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+    }
+
+    body.dark .btn-primary:hover {
+      box-shadow: 0 5px 15px rgba(13, 110, 253, 0.7);
+    }
+
+    .btn-operation {
+      margin: 5px;
+      width: calc(25% - 10px);
+      height: 50px;
+      font-size: 1.2rem;
+    }
+
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      color: #111;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s;
+      z-index: 1000;
+    }
+
+    .toggle-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark .toggle-btn {
+      background: #333;
+      color: #fff;
+    }
+
+    .title-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .title-wrapper::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--info));
+      border-radius: 3px;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      padding: 12px;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.2);
+      border-color: var(--primary);
+    }
+
+    body.dark .form-control {
+      background-color: #2c3446;
+      color: #fff;
+    }
+
+    body.dark .form-control:focus {
+      background-color: #3a4356;
+    }
+
+    .form-label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    
+    .operations-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      padding-top: 10px;
+    }
+
+    body.dark .history-list {
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .history-item {
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      background-color: rgba(0,0,0,0.03);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .history-item:hover {
+      background-color: rgba(0,0,0,0.06);
+    }
+
+    body.dark .history-item {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    body.dark .history-item:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .input-group-text {
+      border-radius: 10px 0 0 10px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    body.dark .input-group-text {
+      background-color: #1a1a2e;
+    }
+
+    .advanced-features {
+      margin-top: 15px;
+      background-color: rgba(0,0,0,0.02);
+      border-radius: 10px;
+      padding: 15px;
+      transition: all 0.3s;
+    }
+
+    body.dark .advanced-features {
+      background-color: rgba(255,255,255,0.03);
+    }
+
+    .tab-content {
+      padding-top: 15px;
+    }
+
+    .nav-tabs .nav-link {
+      border: none;
+      color: var(--text-light);
+      border-radius: 10px 10px 0 0;
+      padding: 8px 20px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .nav-tabs .nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    body.dark .nav-tabs .nav-link {
+      color: var(--text-dark);
+    }
+
+    body.dark .nav-tabs .nav-link.active {
+      background-color: var(--primary);
+    }
+
+    body.dark .nav-tabs .nav-link:not(.active):hover {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .badge-result {
+      font-size: 0.85rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin-left: 10px;
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .settings-icon {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #fff;
+      color: #111;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s;
+      z-index: 1000;
+    }
+
+    body.dark .settings-icon {
+      background: #333;
+      color: #fff;
+    }
+
+    .settings-icon:hover {
+      transform: rotate(30deg);
+    }
+
+    .modal-content {
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark .modal-content {
+      background-color: var(--card-dark);
+      color: var(--text-dark);
+    }
+
+    .decimal-places {
+      width: 60px;
+      text-align: center;
+      border-radius: 5px;
+      padding: 5px;
+      margin: 0 10px;
+    }
+
+    .color-theme {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin: 0 5px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .color-theme.active {
+      transform: scale(1.2);
+      border-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .theme-blue {
+      background: linear-gradient(to right, #00c9ff, #92fe9d);
+    }
+
+    .theme-purple {
+      background: linear-gradient(to right, #8e2de2, #4a00e0);
+    }
+
+    .theme-orange {
+      background: linear-gradient(to right, #f12711, #f5af19);
+    }
+
+    .theme-pink {
+      background: linear-gradient(to right, #fc5c7d, #6a82fb);
+    }
+
+    .theme-green {
+      background: linear-gradient(to right, #11998e, #38ef7d);
+    }
+
+    #resultDisplay {
+      font-size: 2rem;
+      text-align: right;
+      height: 60px;
+      background-color: rgba(0,0,0,0.02);
+      border-radius: 10px;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    body.dark #resultDisplay {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .calculation-mode {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      background-color: rgba(0,0,0,0.05);
+      border-radius: 50px;
+      padding: 5px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .mode-btn.active {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    /* Animações */
+    .animate__animated {
+      animation-duration: 0.6s;
+    }
+
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+      0% { transform: translate(0, 0px); }
+      50% { transform: translate(0, -10px); }
+      100% { transform: translate(0, 0px); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scale-in {
+      animation: scaleIn 0.5s;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Responsividade */
+    @media (max-width: 576px) {
+      .card {
+        padding: 20px;
+      }
+      
+      .btn-operation {
+        font-size: 1rem;
+        height: 45px;
+      }
+      
+      .toggle-btn, .settings-icon {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .toggle-btn span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-btn" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> <span>Modo Escuro</span></button>
+  <button class="settings-icon" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="fas fa-cog"></i></button>
+
+  <div class="card fade-in">
+    <div class="title-wrapper">
+      <h2 class="floating">✨ Calculadora Lindona 2.0 ✨</h2>
+    </div>
+
+    <div class="calculation-mode">
+      <div class="mode-btn active" data-mode="standard" onclick="changeMode('standard')">Padrão</div>
+      <div class="mode-btn" data-mode="scientific" onclick="changeMode('scientific')">Científica</div>
+      <div class="mode-btn" data-mode="programmer" onclick="changeMode('programmer')">Programador</div>
+    </div>
+
+    <div id="resultDisplay">0</div>
+
+    <div id="standardMode">
+      <div class="mb-3">
+        <label for="num1" class="form-label"><i class="fas fa-hashtag"></i> Primeiro número:</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-calculator"></i></span>
+          <input
+            type="number"
+            class="form-control"
+            id="num1"
+            placeholder="Ex: 10"
+            onkeyup="updateResultLive()"
+          />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="num2" class="form-label"><i class="fas fa-hashtag"></i> Segundo número:</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-calculator"></i></span>
+          <input
+            type="number"
+            class="form-control"
+            id="num2"
+            placeholder="Ex: 5"
+            onkeyup="updateResultLive()"
+          />
+        </div>
+      </div>
+
+      <div class="operations-container">
+        <button class="btn btn-primary btn-operation" onclick="performOperation('add')">
+          <i class="fas fa-plus"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="performOperation('subtract')">
+          <i class="fas fa-minus"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="performOperation('multiply')">
+          <i class="fas fa-times"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="performOperation('divide')">
+          <i class="fas fa-divide"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="performOperation('power')">
+          <i class="fas fa-superscript"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="performOperation('root')">
+          <i class="fas fa-square-root-alt"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="performOperation('modulo')">
+          <i class="fas fa-percentage"></i>
+        </button>
+        <button class="btn btn-primary btn-operation" onclick="clearCalculator()">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+
+      <button class="btn btn-primary w-100 mb-3 animate__animated animate__pulse" onclick="calcularTudo()">
+        <i class="fas fa-magic"></i> Calcular Tudo
+      </button>
+    </div>
+
+    <div id="scientificMode" style="display:none;">
+      <div class="mb-3">
+        <label for="sciNum" class="form-label"><i class="fas fa-atom"></i> Número:</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-flask"></i></span>
+          <input
+            type="number"
+            class="form-control"
+            id="sciNum"
+            placeholder="Digite um número"
+          />
+        </div>
+      </div>
+
+      <div class="operations-container">
+        <button class="btn btn-primary btn-operation" onclick="scientific('sin')">sin</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('cos')">cos</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('tan')">tan</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('log')">log</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('ln')">ln</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('factorial')">x!</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('square')">x²</button>
+        <button class="btn btn-primary btn-operation" onclick="scientific('cube')">x³</button>
+      </div>
+    </div>
+
+    <div id="programmerMode" style="display:none;">
+      <div class="mb-3">
+        <label for="progNum" class="form-label"><i class="fas fa-code"></i> Número (Decimal):</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-laptop-code"></i></span>
+          <input
+            type="number"
+            class="form-control"
+            id="progNum"
+            placeholder="Digite um número decimal"
+            oninput="updateNumberSystems()"
+          />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-binary"></i> Representações:</label>
+        <div class="result">
+          <strong>Binário:</strong> <span id="binaryResult">0</span>
+        </div>
+        <div class="result">
+          <strong>Hexadecimal:</strong> <span id="hexResult">0</span>
+        </div>
+        <div class="result">
+          <strong>Octal:</strong> <span id="octalResult">0</span>
+        </div>
+      </div>
+
+      <div class="operations-container">
+        <button class="btn btn-primary btn-operation" onclick="bitOperation('not')">NOT</button>
+        <button class="btn btn-primary btn-operation" onclick="bitOperation('and')">AND</button>
+        <button class="btn btn-primary btn-operation" onclick="bitOperation('or')">OR</button>
+        <button class="btn btn-primary btn-operation" onclick="bitOperation('xor')">XOR</button>
+        <button class="btn btn-primary btn-operation" onclick="bitOperation('lshift')"><<</button>
+        <button class="btn btn-primary btn-operation" onclick="bitOperation('rshift')">>></button>
+      </div>
+    </div>
+
+    <div id="resultado"></div>
+
+    <div class="history-list">
+      <h5><i class="fas fa-history"></i> Histórico</h5>
+      <div id="historyItems"></div>
+    </div>
+  </div>
+
+  <!-- Modal de Configurações -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-cog"></i> Configurações</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Casas Decimais:</label>
+            <div class="d-flex align-items-center">
+              <input type="range" class="form-range" min="0" max="10" id="decimalSlider" value="2" oninput="updateDecimalPlaces()">
+              <input type="number" class="decimal-places" id="decimalInput" min="0" max="10" value="2" oninput="updateDecimalFromInput()">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Temas de Cores:</label>
+            <div class="d-flex justify-content-center mt-2">
+              <div class="color-theme theme-blue active" onclick="changeColorTheme('blue')"></div>
+              <div class="color-theme theme-purple" onclick="changeColorTheme('purple')"></div>
+              <div class="color-theme theme-orange" onclick="changeColorTheme('orange')"></div>
+              <div class="color-theme theme-pink" onclick="changeColorTheme('pink')"></div>
+              <div class="color-theme theme-green" onclick="changeColorTheme('green')"></div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Atualização ao Vivo:</label>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="liveUpdateToggle" checked>
+              <label class="form-check-label" for="liveUpdateToggle">Atualizar resultados enquanto digita</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-primary" onclick="saveSettings()" data-bs-dismiss="modal">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+ // Variáveis globais
+let decimalPlaces = 2;
+let calculationHistory = [];
+let currentMode = 'standard';
+
+// Função para alternar o modo escuro
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  const btn = document.querySelector(".toggle-btn");
+  if (document.body.classList.contains("dark")) {
+    btn.innerHTML = '<i class="fas fa-sun"></i> <span>Modo Claro</span>';
+  } else {
+    btn.innerHTML = '<i class="fas fa-moon"></i> <span>Modo Escuro</span>';
+  }
+}
+
+// Função para alterar o tema de cores
+function changeColorTheme(theme) {
+  const root = document.documentElement;
+  const themes = {
+    blue: {
+      light: 'linear-gradient(to right, #00c9ff, #92fe9d)',
+      dark: 'linear-gradient(to right, #0f2027, #203a43, #2c5364)'
+    },
+    purple: {
+      light: 'linear-gradient(to right, #8e2de2, #4a00e0)',
+      dark: 'linear-gradient(to right, #16222a, #3a6073)'
+    },
+    orange: {
+      light: 'linear-gradient(to right, #f12711, #f5af19)',
+      dark: 'linear-gradient(to right, #232526, #414345)'
+    },
+    pink: {
+      light: 'linear-gradient(to right, #fc5c7d, #6a82fb)',
+      dark: 'linear-gradient(to right, #000428, #004e92)'
+    },
+    green: {
+      light: 'linear-gradient(to right, #11998e, #38ef7d)',
+      dark: 'linear-gradient(to right, #1f4037, #99f2c8)'
+    }
+  };
+  
+  root.style.setProperty('--bg-light', themes[theme].light);
+  root.style.setProperty('--bg-dark', themes[theme].dark);
+  
+  // Atualiza o tema ativo
+  document.querySelectorAll('.color-theme').forEach(el => {
+    el.classList.remove('active');
+  });
+  document.querySelector(`.theme-${theme}`).classList.add('active');
+}
+
+// Função para mudar o modo de cálculo
+function changeMode(mode) {
+  currentMode = mode;
+  
+  // Esconde todos os modos
+  document.getElementById('standardMode').style.display = 'none';
+  document.getElementById('scientificMode').style.display = 'none';
+  document.getElementById('programmerMode').style.display = 'none';
+  
+  // Mostra o modo selecionado
+  document.getElementById(`${mode}Mode`).style.display = 'block';
+  
+  // Atualiza botões de modo
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
+  
+  // Limpa o display
+  document.getElementById('resultDisplay').textContent = '0';
+}
+
+// Função para atualizar as casas decimais
+function updateDecimalPlaces() {
+  const slider = document.getElementById('decimalSlider');
+  const input = document.getElementById('decimalInput');
+  decimalPlaces = parseInt(slider.value);
+  input.value = decimalPlaces;
+  updateResultLive();
+}
+
+function updateDecimalFromInput() {
+  const slider = document.getElementById('decimalSlider');
+  const input = document.getElementById('decimalInput');
+  decimalPlaces = parseInt(input.value);
+  if (decimalPlaces < 0) decimalPlaces = 0;
+  if (decimalPlaces > 10) decimalPlaces = 10;
+  slider.value = decimalPlaces;
+  updateResultLive();
+}
+
+// Função para salvar configurações
+function saveSettings() {
+  const liveUpdate = document.getElementById('liveUpdateToggle').checked;
+  // Aqui você pode adicionar mais coisas para salvar no futuro
+  // Como não temos armazenamento persistente, apenas atualizamos as variáveis globais
+}
+
+// Função para limpar a calculadora
+function clearCalculator() {
+  document.getElementById('num1').value = '';
+  document.getElementById('num2').value = '';
+  document.getElementById('resultDisplay').textContent = '0';
+  document.getElementById('resultado').innerHTML = '';
+}
+
+// Função para calcular todas as operações
+function calcularTudo() {
+  const n1 = parseFloat(document.getElementById("num1").value);
+  const n2 = parseFloat(document.getElementById("num2").value);
+  const res = document.getElementById("resultado");
+  res.innerHTML = "";
+
+  if (isNaN(n1) || isNaN(n2)) {
+    res.innerHTML =
+      '<div class="alert alert-danger animate__animated animate__headShake"><i class="fas fa-exclamation-triangle"></i> Por favor, insira dois números válidos!</div>';
+    return;
+  }
+
+  // Adiciona ao histórico
+  addToHistory(`Cálculos: ${n1} e ${n2}`);
+
+  const operacoes = [
+    { emoji: "🧮", label: "Soma", valor: n1 + n2, classe: "primary" },
+    { emoji: "➖", label: "Subtração", valor: n1 - n2, classe: "info" },
+    { emoji: "✖️", label: "Multiplicação", valor: n1 * n2, classe: "success" },
+    { emoji: "➗", label: "Divisão", valor: (n1 / n2).toFixed(decimalPlaces), classe: "warning" },
+    { emoji: "🧩", label: "Módulo", valor: n1 % n2, classe: "danger" },
+    { emoji: "🔼", label: "Potência", valor: Math.pow(n1, n2).toFixed(decimalPlaces), classe: "primary" },
+    { emoji: "📐", label: "Raiz", valor: Math.pow(n1, 1/n2).toFixed(decimalPlaces), classe: "info" },
+    { emoji: "🔄", label: "Média", valor: ((n1 + n2) / 2).toFixed(decimalPlaces), classe: "success" },
+  ];
+
+  // Adiciona cada resultado com animação
+  operacoes.forEach((op, index) => {
+    setTimeout(() => {
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `result animate__animated animate__fadeInRight`;
+      resultDiv.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+          <div>${op.emoji} <strong>${op.label}</strong></div>
+          <div><span class="badge bg-${op.classe} badge-result">${op.valor}</span></div>
+        </div>
+      `;
+      res.appendChild(resultDiv);
+    }, index * 100);
+  });
+}
+
+// Função para realizar uma operação específica
+function performOperation(operation) {
+  const n1 = parseFloat(document.getElementById("num1").value);
+  const n2 = parseFloat(document.getElementById("num2").value);
+  
+  if (isNaN(n1) || isNaN(n2)) {
+    document.getElementById("resultDisplay").textContent = "Erro";
+    return;
+  }
+  
+  let result;
+  let operationText;
+  
+  switch(operation) {
+    case 'add':
+      result = n1 + n2;
+      operationText = `${n1} + ${n2}`;
+      break;
+    case 'subtract':
+      result = n1 - n2;
+      operationText = `${n1} - ${n2}`;
+      break;
+    case 'multiply':
+      result = n1 * n2;
+      operationText = `${n1} × ${n2}`;
+      break;
+    case 'divide':
+      result = n1 / n2;
+      operationText = `${n1} ÷ ${n2}`;
+      break;
+    case 'power':
+      result = Math.pow(n1, n2);
+      operationText = `${n1} ^ ${n2}`;
+      break;
+    case 'root':
+      result = Math.pow(n1, 1/n2);
+      operationText = `${n1} raiz ${n2}`;
+      break;
+    case 'modulo':
+      result = n1 % n2;
+      operationText = `${n1} % ${n2}`;
+      break;
+  }
+  
+  // Atualiza o display e adiciona ao histórico
+  document.getElementById("resultDisplay").textContent = result.toFixed(decimalPlaces);
+  addToHistory(`${operationText} = ${result.toFixed(decimalPlaces)}`);
+}
+
+// Função para operações científicas
+function scientific(operation) {
+  const num = parseFloat(document.getElementById("sciNum").value);
+  
+  if (isNaN(num)) {
+    document.getElementById("resultDisplay").textContent = "Erro";
+    return;
+  }
+  
+  let result;
+  let operationText;
+  
+  switch(operation) {
+    case 'sin':
+      result = Math.sin(num);
+      operationText = `sin(${num})`;
+      break;
+    case 'cos':
+      result = Math.cos(num);
+      operationText = `cos(${num})`;
+      break;
+    case 'tan':
+      result = Math.tan(num);
+      operationText = `tan(${num})`;
+      break;
+    case 'log':
+      result = Math.log10(num);
+      operationText = `log(${num})`;
+      break;
+    case 'ln':
+      result = Math.log(num);
+      operationText = `ln(${num})`;
+      break;
+    case 'factorial':
+      result = factorial(num);
+      operationText = `${num}!`;
+      break;
+    case 'square':
+      result = num * num;
+      operationText = `${num}²`;
+      break;
+    case 'cube':
+      result = num * num * num;
+      operationText = `${num}³`;
+      break;
+  }
+  
+  document.getElementById("resultDisplay").textContent = result.toFixed(decimalPlaces);
+  addToHistory(`${operationText} = ${result.toFixed(decimalPlaces)}`);
+}
+
+// Função fatorial
+function factorial(n) {
+  if (n === 0 || n === 1) return 1;
+  let result = 1;
+  for (let i = 2; i <= n; i++) {
+    result *= i;
+  }
+  return result;
+}
+
+// Função para operações com bits
+function bitOperation(operation) {
+  const num = parseInt(document.getElementById("progNum").value);
+  const secondNum = parseInt(prompt("Digite o segundo número para operação:"));
+  
+  if (isNaN(num) || (operation !== 'not' && isNaN(secondNum))) {
+    document.getElementById("resultDisplay").textContent = "Erro";
+    return;
+  }
+  
+  let result;
+  let operationText;
+  
+  switch(operation) {
+    case 'not':
+      result = ~num;
+      operationText = `NOT ${num}`;
+      break;
+    case 'and':
+      result = num & secondNum;
+      operationText = `${num} AND ${secondNum}`;
+      break;
+    case 'or':
+      result = num | secondNum;
+      operationText = `${num} OR ${secondNum}`;
+      break;
+    case 'xor':
+      result = num ^ secondNum;
+      operationText = `${num} XOR ${secondNum}`;
+      break;
+    case 'lshift':
+      result = num << secondNum;
+      operationText = `${num} << ${secondNum}`;
+      break;
+    case 'rshift':
+      result = num >> secondNum;
+      operationText = `${num} >> ${secondNum}`;
+      break;
+  }
+  
+  document.getElementById("resultDisplay").textContent = result;
+  updateNumberSystems(result);
+  addToHistory(`${operationText} = ${result}`);
+}
+
+// Atualiza as representações de número
+function updateNumberSystems(customNum) {
+  const num = customNum !== undefined ? customNum : parseInt(document.getElementById("progNum").value);
+  
+  if (!isNaN(num)) {
+    document.getElementById("binaryResult").textContent = num.toString(2);
+    document.getElementById("hexResult").textContent = num.toString(16).toUpperCase();
+    document.getElementById("octalResult").textContent = num.toString(8);
+  } else {
+    document.getElementById("binaryResult").textContent = "0";
+    document.getElementById("hexResult").textContent = "0";
+    document.getElementById("octalResult").textContent = "0";
+  }
+}
+
+// Função para atualizar o resultado em tempo real
+function updateResultLive() {
+  if (!document.getElementById('liveUpdateToggle')?.checked) return;
+  
+  const n1 = parseFloat(document.getElementById("num1").value);
+  const n2 = parseFloat(document.getElementById("num2").value);
+  
+  if (!isNaN(n1) && !isNaN(n2)) {
+    document.getElementById("resultDisplay").textContent = (n1 + n2).toFixed(decimalPlaces);
+  } else {
+    document.getElementById("resultDisplay").textContent = "0";
+  }
+}
+
+// Adiciona ao histórico
+function addToHistory(text) {
+  // Adiciona no início para mostrar entradas mais recentes primeiro
+  calculationHistory.unshift(text);
+  
+  // Mantém apenas os últimos 10 itens
+  if (calculationHistory.length > 10) {
+    calculationHistory.pop();
+  }
+  
+  updateHistoryDisplay();
+}
+
+// Atualiza o display do histórico
+function updateHistoryDisplay() {
+  const historyContainer = document.getElementById('historyItems');
+  historyContainer.innerHTML = '';
+  
+  calculationHistory.forEach((item, index) => {
+    const historyItem = document.createElement('div');
+    historyItem.className = 'history-item';
+    historyItem.innerHTML = `
+      <div>${item}</div>
+      <div>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="recallHistory(${index})">
+          <i class="fas fa-redo-alt"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="removeHistoryItem(${index})">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    historyContainer.appendChild(historyItem);
+  });
+}
+
+// Remove um item do histórico
+function removeHistoryItem(index) {
+  calculationHistory.splice(index, 1);
+  updateHistoryDisplay();
+}
+
+// Recupera um cálculo do histórico
+function recallHistory(index) {
+  const item = calculationHistory[index];
+  
+  // Verifica se é do formato "n1 operador n2 = resultado"
+  const match = item.match(/^(\d+\.?\d*)\s*([+\-×÷^])\s*(\d+\.?\d*)\s*=\s*(\d+\.?\d*)$/);
+  
+  if (match) {
+    const [_, n1, op, n2] = match;
+    document.getElementById('num1').value = n1;
+    document.getElementById('num2').value = n2;
+    updateResultLive();
+  }
+}
+
+// Adiciona efeitos de hover aos botões
+document.querySelectorAll('.btn').forEach(btn => {
+  btn.addEventListener('mouseover', function() {
+    this.classList.add('animate__animated', 'animate__pulse');
+  });
+  
+  btn.addEventListener('mouseout', function() {
+    this.classList.remove('animate__animated', 'animate__pulse');
+  });
+});
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+  // Define tema aleatório ao iniciar
+  const temas = ['blue', 'purple', 'orange', 'pink', 'green'];
+  const temaAleatorio = temas[Math.floor(Math.random() * temas.length)];
+  changeColorTheme(temaAleatorio);
+  
+  // Adiciona alguns itens de exemplo ao histórico
+  addToHistory('Bem-vindo à Calculadora Lindona 2.0! 💖');
+  addToHistory('Use os controles para calcular ✨');
+});
+
+</script>
